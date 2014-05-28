@@ -16,9 +16,6 @@
 
 package com.google.sample.castcompanionlibrary.notification;
 
-import static com.google.sample.castcompanionlibrary.utils.LogUtils.LOGD;
-import static com.google.sample.castcompanionlibrary.utils.LogUtils.LOGE;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -54,6 +51,9 @@ import com.google.sample.castcompanionlibrary.utils.Utils;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import static com.google.sample.castcompanionlibrary.utils.LogUtils.LOGD;
+import static com.google.sample.castcompanionlibrary.utils.LogUtils.LOGE;
 
 /**
  * A service to provide status bar Notifications when we are casting. For JB+ versions, notification
@@ -164,7 +164,7 @@ public class VideoCastNotificationService extends Service {
         if (null == info) {
             return;
         }
-        if(null != mBitmapDecoderTask){
+        if (null != mBitmapDecoderTask) {
             mBitmapDecoderTask.cancel(false);
         }
         mBitmapDecoderTask = new DecodeVideoArtBitmapTask();
@@ -225,7 +225,7 @@ public class VideoCastNotificationService extends Service {
      */
     @Override
     public void onDestroy() {
-        if(null != mBitmapDecoderTask){
+        if (null != mBitmapDecoderTask) {
             mBitmapDecoderTask.cancel(false);
         }
         LOGD(TAG, "onDestroy was called");
@@ -244,7 +244,7 @@ public class VideoCastNotificationService extends Service {
      * so when user goes into the CastPlayerActivity, she can have a meaningful "back" experience.
      */
     private RemoteViews build(MediaInfo info, Bitmap bitmap, boolean isPlaying,
-            Class<?> targetActivity) throws CastException, TransientNetworkDisconnectionException,
+                              Class<?> targetActivity) throws CastException, TransientNetworkDisconnectionException,
             NoConnectionException {
         Bundle mediaWrapper = Utils.fromMediaInfo(mCastManager.getRemoteMediaInformation());
         Intent contentIntent = null;
@@ -282,7 +282,7 @@ public class VideoCastNotificationService extends Service {
                 mCastManager.getDeviceName());
         rv.setTextViewText(R.id.subTitleView, castingTo);
         mNotification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_action_notification)
+                .setSmallIcon(R.drawable.ic_launcher)
                 .setContentIntent(resultPendingIntent)
                 .setContent(rv)
                 .setAutoCancel(false)
@@ -368,11 +368,11 @@ public class VideoCastNotificationService extends Service {
 
         protected Void doInBackground(final MediaInfo... info) {
             mInfo = info[0];
-            if(!mInfo.getMetadata().hasImages()){
+            if (!mInfo.getMetadata().hasImages()) {
                 return null;
             }
             Uri imgUri = mInfo.getMetadata().getImages().get(0).getUrl();
-            if(imgUri.equals(mVideoArtUri)){
+            if (imgUri.equals(mVideoArtUri)) {
                 return null;
             }
             URL imgUrl = null;
@@ -393,10 +393,9 @@ public class VideoCastNotificationService extends Service {
         @Override
         protected void onPostExecute(Void v) {
             try {
-                if(!mInfo.getMetadata().hasImages()){
+                if (!mInfo.getMetadata().hasImages()) {
                     build(mInfo, null, mIsPlaying, mTargetActivity);
-                }
-                else{
+                } else {
                     build(mInfo, mVideoArtBitmap, mIsPlaying, mTargetActivity);
                 }
             } catch (CastException e) {
